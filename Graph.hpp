@@ -23,8 +23,12 @@ public:
     
     // Returns distance, cost for a direct edge between two nodes
     std::pair<int, int> getEdgeWeights(const T& src, const T& dest) const;
+
     //Finding shortest paths to state
     std::pair<int, std::vector<std::vector<T>>> getShortestPathsToStateData(const T& src, const std::string& state) const;
+
+    // Finding shortest path between start and destination airports
+    std::pair<int, std::vector<T>> getShortestPathToAirport(const T& src, const T& dest);
 
 private:
     std::vector<T> vertices;

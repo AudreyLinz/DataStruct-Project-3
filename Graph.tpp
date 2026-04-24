@@ -58,7 +58,7 @@ std::pair<int, std::vector<std::vector<T>>> Graph<T>::getShortestPathsToStateDat
     minHeap<Edge> heap;
     heap.insert(Edge(i_src, 0, 0));
 
-    //Run standard Dijkstra to find shortest paths to ALL reachable nodes
+    // Run standard Dijkstra to find shortest paths to ALL reachable nodes
     while (!heap.empty()) {
         Edge current = heap.deleteMin();
         int u = current.neighbor;
@@ -110,4 +110,54 @@ std::pair<int, int> Graph<T>::getEdgeWeights(const T& src, const T& dest) const 
         if (edge.neighbor == i2) return {edge.distance, edge.cost};
     }
     return {0, 0};
+}
+
+// add comments
+template<typename T>
+std::pair<int, std::vector<T>> Graph<T>::getShortestPathToAirport(const T& src, const T& dest) {
+    int i_src = getVertexIndex(src);
+    int i_dest = getVertexIndex(dest);
+
+    if (i_src  == -1 || i_dest == -1) {
+        std::cout << "Source or destination airport not found.\n";
+        return {-1, {}};
+    }
+
+    // vector for distances and parents, heap for edges - Dijkstra's
+    std::vector<int> distances(vertices.size(), INT_MAX);
+    std::vector<int> parents(vertices.size(), -1);
+
+    minHeap<Edge> heap;
+    heap.insert(Edge(i_src, 0, 0));
+
+    while (!heap.empty()) {
+        Edge current = heap.deleteMin();
+        int u = current.neighbor;
+        int d = current.distance;
+
+        if (d > distances[u]) continue; // not there yet
+        if (u == i_dest) break;         // stop when reached
+
+        for (const auto& edge : edges[u]) {
+            int new_dist = distances[u] + edge.distance;
+            if (new_dist < distances[edge.neighbor]) {
+                distances[edge.neighbor] = new_dist;
+                parents[edge.neighbor] = u; // for reconstruction - Dijsktra
+                heap.insert(Edge(edge.neighbor, new_dist, 0));
+            }
+        }
+    }
+
+    if (distances[i_dest] == INT_MAX) {
+        std::cout << "No path exists from " << src << " to " << dest << ".\n";
+        return {-1, {}};
+    }
+
+    // Reconstruct path from destination to source (reverse)
+    std::vector<T> path;
+    for (int at = i_dest; at != -1; at = parents[at]) {
+        path.push_back(vertices[at]);
+    }
+    std::reverse(path.begin(), path.end());
+    return {distances[i_dest], path};
 }
