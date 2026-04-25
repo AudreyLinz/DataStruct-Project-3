@@ -101,7 +101,7 @@ std::pair<int, std::vector<std::vector<T>>> Graph<T>::getShortestPathsToStateDat
 }
 
 
-template<typename T> // Returns distance, cost for a direct edge between two nodes
+template<typename T> // Returns dsitance, cost for a direct edge between two nodes
 std::pair<int, int> Graph<T>::getEdgeWeights(const T& src, const T& dest) const {
     int i1 = getVertexIndex(src);
     int i2 = getVertexIndex(dest);
@@ -112,7 +112,6 @@ std::pair<int, int> Graph<T>::getEdgeWeights(const T& src, const T& dest) const 
     return {0, 0};
 }
 
-// add comments
 template<typename T>
 std::pair<int, std::vector<T>> Graph<T>::getShortestPathToAirport(const T& src, const T& dest) {
     int i_src = getVertexIndex(src);
@@ -160,4 +159,95 @@ std::pair<int, std::vector<T>> Graph<T>::getShortestPathToAirport(const T& src, 
     }
     std::reverse(path.begin(), path.end());
     return {distances[i_dest], path};
+}
+
+template<typename T>
+std::vector<T> Graph<T>::shortestPathExactStops(const T& src, const T& dest, int stops, int& totalDist, int& totalCost){
+    //convert src and dest codes to vertex indices
+    int s = getVertexIndex(src);
+    int d = getVertexIndex(dest);
+
+    totalDist = 0;
+    totalCost = 0;
+
+    //if code not listed return emtpy
+    if (s== -1 || d == -1) return{};
+
+    struct State{
+        int node;   //current index
+        int stops;  // number of edges used
+        int dist;   // total distance
+        int cost;   //total cost
+        std::vector<int> path;
+    };
+
+    std::vector<State> states;
+    //inital starting point
+    states.push_back({s, 0, 0, 0, {s}});
+
+    //stores shortest path found so far
+    int bestDist = INT_MAX;
+    std::vector<int> bestPath;
+
+    //searches for all possible paths - state reps one potential route as bestDist
+    while (!states.empty()) {
+
+        State curr = states.back();
+        states.pop_back();
+
+        // checks if paths inside the loop is valid
+        if (curr.stops > stops) continue;
+
+        // checks if valid solution
+        if (curr.node == d && curr.stops == stops) {
+            if (curr.dist < bestDist) {
+                bestDist = curr.dist;
+                bestPath = curr.path;
+                totalCost = curr.cost;
+            }
+            continue;
+        }
+
+        //loops through all outgoing flights to find new possible routes
+        for (const auto& edge : edges[curr.node]) {
+
+            // Creates a new path state
+            State next = curr;
+
+            // Moves to next airport
+            next.node = edge.neighbor;
+
+            // Increase stop count - adding new path
+            if (edge.neighbor != d) {
+                next.stops = curr.stops + 1;
+            }
+
+            // Accumulate total distance
+            next.dist = curr.dist + edge.distance;
+
+            // Accumulate total cost
+            next.cost = curr.cost + edge.cost;
+
+            // Add airport to the path history
+            if (std::find(next.path.begin(), next.path.end(), edge.neighbor) != next.path.end())
+                continue;
+
+            next.path.push_back(edge.neighbor);
+            states.push_back(next);
+        }
+    }
+
+    // If no valid path was found
+    if (bestPath.empty()) return {};
+
+    // Store final bestDist
+    totalDist = bestDist;
+
+    //convert indices back to airport codes for output
+    std::vector<T> result;
+    for (int idx : bestPath) {
+        result.push_back(vertices[idx]);
+    }
+
+    return result;
 }

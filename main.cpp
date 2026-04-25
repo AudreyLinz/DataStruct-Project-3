@@ -79,14 +79,19 @@ int main(void) {
         std::cout << "\nChoose an option:\n"; //able to choose from what type of paths you want to look at then choose from where to where you want
         std::cout << "1. Shortest Path (Single Pair)\n";
         std::cout << "2. Shortest Paths to State\n";
+        std::cout << "3. Shortest Path with Exact Stops\n";
         std::cout << "0. Exit\n";
         std::cout << "Enter choice: ";
         std::cin >> choice;
 
+        //Option 0 -Exit program
         if (choice == 0) break;
 
-        if (choice == 1) break; //break for now Shortest Path (Single Path)
-        else if (choice == 2) { //Shortest Paths to State choice
+        //Option 1 - Shortest Path (Single Path)
+        if (choice == 1) break; //break for now
+
+        //Option 2 - Shortest Paths to State choice
+        else if (choice == 2) {
             std::string s, state;
             std::cout << "Source: "; std::cin >> s;
             std::cout << "State: ";  std::cin >> state;
@@ -101,7 +106,33 @@ int main(void) {
                 }
             }
         }
-        else if (choice == 0) break;
+
+        //Option 3 - Shortest path with Exact number of stops
+        else if (choice == 3) {
+            std::string src, dest;
+            int stops;
+            //gets inputs from user
+            std::cout << "Source: "; std::cin >> src;
+            std::cout << "Destination: "; std::cin >> dest;
+            std::cout << "Stops: "; std::cin >> stops;
+
+            int totalDist = 0, totalCost = 0;
+            //calc shortestpathexactstops
+            auto path = airportGraph.shortestPathExactStops(src, dest, stops, totalDist, totalCost);
+            //if no path exists
+            if (path.empty()) {
+                std::cout << "None\n";
+            //if path exist, print output
+            } else {
+                std::cout << "Shortest route from " << src << " to " << dest << " with " << stops<< " stops: ";
+                for (int i = 0; i < path.size(); i++) {
+                    std::cout << path[i];
+                    if (i < path.size() - 1) std::cout << "->";
+                }
+                std::cout << ". The length is " << totalDist << ".";
+                std::cout << " The cost is " << totalCost << ".\n";
+    }
+        }
     }
     return 0;
 }
