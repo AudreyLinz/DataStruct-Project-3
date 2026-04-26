@@ -26,11 +26,15 @@ public:
 
     //Finding shortest paths to state
     std::pair<int, std::vector<std::vector<T>>> getShortestPathsToStateData(const T& src, const std::string& state) const;
+
     //Finds the shortest path with exact number of stops
     std::vector<T> shortestPathExactStops(const T& src, const T& dest, int stops, int& totalDist, int& totalCost);
 
     // Finding shortest path between start and destination airports
     std::pair<int, std::vector<T>> getShortestPathToAirport(const T& src, const T& dest);
+
+    //Finds the connectivity between airports
+    void displayAirportConnections() const;
 
 private:
     std::vector<T> vertices;

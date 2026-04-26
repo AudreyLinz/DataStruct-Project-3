@@ -80,6 +80,7 @@ int main(void) {
         std::cout << "1. Shortest Path (Single Pair)\n";
         std::cout << "2. Shortest Paths to State\n";
         std::cout << "3. Shortest Path with Exact Stops\n";
+        std::cout << "4. Airport Connectivity Count\n";
         std::cout << "0. Exit\n";
         std::cout << "Enter choice: ";
         std::cin >> choice;
@@ -132,6 +133,9 @@ int main(void) {
                 std::cout << ". The length is " << totalDist << ".";
                 std::cout << " The cost is " << totalCost << ".\n";
     }
+        }
+        else if (choice == 4){
+            airportGraph.displayAirportConnections();
         }
     }
     return 0;

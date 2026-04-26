@@ -251,3 +251,44 @@ std::vector<T> Graph<T>::shortestPathExactStops(const T& src, const T& dest, int
 
     return result;
 }
+
+template<typename T>
+void Graph<T>::displayAirportConnections() const{
+    int n = vertices.size();
+
+    std::vector<int> inbound(n,0);
+    std::vector<int> outbound(n,0);
+
+    //count and separating outbound flights to inbound flights
+    for(int i = 0; i < n; i++){
+        //counts how many flights leave airport i
+        outbound[i] = edges[i].size();
+
+        //counts how many flights enter airport j
+        for(const auto& edge : edges[i]){
+            inbound[edge.neighbor]++;
+        }
+
+    }
+
+    //store the results - airport and total connections
+    std::vector<std::pair<T, int>> results;
+
+    //calc total connections and saves into results
+    for(int i = 0; i < n; i++){
+        int total = inbound[i] + outbound[i];
+        results.push_back({vertices[i], total});
+    }
+
+    //sort the list in descending order by the number of total connections
+    std::sort(results.begin(), results.end(),
+    [](const std::pair<T, int>& a, const std::pair<T, int>& b){
+        return a.second > b.second;
+    });
+
+    //print results
+    std::cout << "Airport Connections\n";
+    for (const auto& p : results) {
+        std::cout << p.first << "     " << p.second << "\n";
+    }
+}
