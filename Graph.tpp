@@ -112,6 +112,10 @@ std::pair<int, int> Graph<T>::getEdgeWeights(const T& src, const T& dest) const 
     return {0, 0};
 }
 
+<<<<<<< HEAD
+=======
+// add comments
+>>>>>>> a1e0730 (Prim's Algorithem Added)
 template<typename T>
 std::pair<int, std::vector<T>> Graph<T>::getShortestPathToAirport(const T& src, const T& dest) {
     int i_src = getVertexIndex(src);
@@ -290,5 +294,80 @@ void Graph<T>::displayAirportConnections() const{
     std::cout << "Airport Connections\n";
     for (const auto& p : results) {
         std::cout << p.first << "     " << p.second << "\n";
+    }
+}
+
+
+template<typename T> //Prim's Algorithem
+void Graph<T>::printMST() const {
+    int n = vertices.size();
+    if (n == 0) return;
+
+    std::vector<int> minCost(n, INT_MAX);
+    std::vector<int> parent(n, -1);
+    std::vector<bool> inMST(n, false);
+    
+    // Using a simple min priority queue for Prim's
+    std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, std::greater<std::pair<int, int>>> pq;
+
+    //first vertex
+    minCost[0] = 0;
+    pq.push({0, 0});
+
+    int edgesCount = 0;
+    int totalMSTCost = 0;
+    std::vector<std::pair<std::string, int>> mstEdges;
+
+    while (!pq.empty()) {
+        int u = pq.top().second;
+        pq.pop();
+
+        if (inMST[u]) continue;
+
+        inMST[u] = true;
+        
+        if (parent[u] != -1) {
+            edgesCount++;
+            int weight = minCost[u];
+            totalMSTCost += weight;
+            mstEdges.push_back({vertices[parent[u]] + "-" + vertices[u], weight});
+        }
+
+        //check all neighbors
+        for (const auto& edge : edges[u]) {
+            int v = edge.neighbor;
+            int weight = edge.cost; // Use cost as the weight for MST
+
+            if (!inMST[v] && weight < minCost[v]) {
+                minCost[v] = weight;
+                parent[v] = u;
+                pq.push({minCost[v], v});
+            }
+        }
+        
+        for (int i = 0; i < n; ++i) {
+            for (const auto& edge : edges[i]) {
+                if (edge.neighbor == u) {
+                    int v = i;
+                    int weight = edge.cost;
+                    if (!inMST[v] && weight < minCost[v]) {
+                        minCost[v] = weight;
+                        parent[v] = u;
+                        pq.push({minCost[v], v});
+                    }
+                }
+            }
+        }
+    }
+
+    // Check if all vertices were reached
+    if (edgesCount != n - 1) { // graph is disconnected
+        std::cout << "The graph is disconnected; an MST cannot be formed.\n";
+    } else {
+        std::cout << "Minimum Spanning Tree:\n";
+        for (const auto& e : mstEdges) {
+            std::cout << "Edge: " << e.first << " Weight: " << e.second << "\n";
+        }
+        std::cout << "\nTotal Cost of MST: " << totalMSTCost << "\n";
     }
 }

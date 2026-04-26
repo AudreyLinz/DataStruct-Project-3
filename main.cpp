@@ -81,6 +81,10 @@ int main(void) {
         std::cout << "2. Shortest Paths to State\n";
         std::cout << "3. Shortest Path with Exact Stops\n";
         std::cout << "4. Airport Connectivity Count\n";
+<<<<<<< HEAD
+=======
+        std::cout << "5. Minimum Spanning Tree (Prim's)\n";
+>>>>>>> a1e0730 (Prim's Algorithem Added)
         std::cout << "0. Exit\n";
         std::cout << "Enter choice: ";
         std::cin >> choice;
@@ -137,6 +141,12 @@ int main(void) {
         else if (choice == 4){
             airportGraph.displayAirportConnections();
         }
+<<<<<<< HEAD
+=======
+        else if (choice == 5){
+            airportGraph.printMST();
+        }
+>>>>>>> a1e0730 (Prim's Algorithem Added)
     }
     return 0;
 }

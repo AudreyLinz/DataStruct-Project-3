@@ -36,6 +36,12 @@ public:
     //Finds the connectivity between airports
     void displayAirportConnections() const;
 
+<<<<<<< HEAD
+=======
+    //Prim's Algorithem
+    void printMST() const;
+
+>>>>>>> a1e0730 (Prim's Algorithem Added)
 private:
     std::vector<T> vertices;
     std::map<T, std::string> vertexToState; 
