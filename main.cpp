@@ -89,8 +89,41 @@ int main(void) {
         //Option 0 -Exit program
         if (choice == 0) break;
 
-        //Option 1 - Shortest Path (Single Path)
-        if (choice == 1) break; //break for now
+        if (choice == 1) {
+            std::string src, dest;
+
+            std::cout << "Source: ";
+            std::cin >> src;
+
+            std::cout << "Destination: ";
+            std::cin >> dest;
+
+            auto res = airportGraph.getShortestPathToAirport(src, dest);
+
+            if (res.first == -1) {
+                std::cout << "Shortest route from " << src << " to " << dest << ": None\n";
+            } 
+            else {
+                std::cout << "Shortest route from " << src << " to " << dest << ": ";
+
+                int totalCost = 0;
+
+                for (size_t i = 0; i < res.second.size(); i++) {
+                    std::cout << res.second[i];
+
+                    if (i < res.second.size() - 1) {
+                        std::cout << " -> ";
+
+                        auto w = airportGraph.getEdgeWeights(res.second[i], res.second[i + 1]);
+                        totalCost += w.second;
+                    }
+                }
+
+                std::cout << ". The length is " << res.first;
+                std::cout << ". The cost is " << totalCost << ".\n";
+            }
+        }
+
 
         //Option 2 - Shortest Paths to State choice
         else if (choice == 2) {
@@ -138,7 +171,10 @@ int main(void) {
         else if (choice == 4){
             airportGraph.displayAirportConnections();
         }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 0fb50b9 (>_>)
         else if (choice == 5){
             airportGraph.printMST();
         }
