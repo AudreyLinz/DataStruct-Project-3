@@ -39,6 +39,9 @@ public:
     //Creates an undirected graph
     Graph<T> buildUndirectedGraph() const;
 
+    //Prim's Algorithem
+    void printMST() const;
+git rm --cached a.out
 private:
     std::vector<T> vertices;
     std::map<T, std::string> vertexToState; 
