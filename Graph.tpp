@@ -191,6 +191,7 @@ std::tuple<int, int, std::vector<T>> Graph<T>::getShortestPathToAirport(const T&
 }
 
 // DFS for detecting cycles
+template <typename T>
 bool Graph<T>::DFS(int src, int dest, std::vector<bool>& visited, const std::vector<std::vector<Edge>>& mstEdges) {
     if (src == dest) return true;
     visited[src] = true;
@@ -204,6 +205,7 @@ bool Graph<T>::DFS(int src, int dest, std::vector<bool>& visited, const std::vec
 }
 
 // Returns MST edges using Kruskal's algorithm
+template <typename T>
 std::vector<Edge> Graph<T>::getMinimumSpanningTree() {
     int V = vertices.size();
 
