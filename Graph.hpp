@@ -8,9 +8,11 @@
 #include <utility> 
 
 struct Edge {
+    int src;
     int neighbor;
     int distance;
     int cost;
+    Edge(int s, int n, int d, int c) : src(s), neighbor(-1), distance(d), cost(c) {}
     Edge(int n, int d, int c) : neighbor(n), distance(d), cost(c) {}
     bool operator<(const Edge& other) const { return distance < other.distance; }
 };
