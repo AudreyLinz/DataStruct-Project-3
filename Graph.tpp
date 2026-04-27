@@ -114,50 +114,133 @@ std::pair<int, int> Graph<T>::getEdgeWeights(const T& src, const T& dest) const 
 
 // add comments
 template<typename T>
-std::pair<int, std::vector<T>> Graph<T>::getShortestPathToAirport(const T& src, const T& dest) {
+std::tuple<int, int, std::vector<T>> Graph<T>::getShortestPathToAirport(const T& src, const T& dest) {
+    // Get indeces of source and destination
     int i_src = getVertexIndex(src);
     int i_dest = getVertexIndex(dest);
 
+    // Return error if either vertex is not found
     if (i_src  == -1 || i_dest == -1) {
         std::cout << "Source or destination airport not found.\n";
-        return {-1, {}};
+        return {-1, -1, {}};        // Return length and cost of path - indicate failure with -1 distance and cost, empty path
     }
 
-    // vector for distances and parents, heap for edges - Dijkstra's
+    // Initialize distances with max int, parents with -1 (undefined)
     std::vector<int> distances(vertices.size(), INT_MAX);
     std::vector<int> parents(vertices.size(), -1);
 
+    // Min-heap to select the next edge with the smallest distance
     minHeap<Edge> heap;
-    heap.insert(Edge(i_src, 0, 0));
+    heap.insert(Edge(i_src, 0, 0));     // // Start from source with distance and cost zero - Edge(neighbor, distance, cost)
 
+    // Dijkstra's algorithm main loop
     while (!heap.empty()) {
         Edge current = heap.deleteMin();
         int u = current.neighbor;
         int d = current.distance;
 
-        if (d > distances[u]) continue; // not there yet
-        if (u == i_dest) break;         // stop when reached
+        // Skip if we've found a better path
+        if (d > distances[u]) continue;
 
+        // Stop early if destination reached
+        if (u == i_dest) break;
+
+        // Go through each edge and update distances as needed
         for (const auto& edge : edges[u]) {
             int new_dist = distances[u] + edge.distance;
+
+            // Check if shorter path has been found, update if so
             if (new_dist < distances[edge.neighbor]) {
                 distances[edge.neighbor] = new_dist;
-                parents[edge.neighbor] = u; // for reconstruction - Dijsktra
+                parents[edge.neighbor] = u;         // Track path for reconstruction
                 heap.insert(Edge(edge.neighbor, new_dist, 0));
             }
         }
     }
 
+    // If destination is unreachable, indicate failure
     if (distances[i_dest] == INT_MAX) {
         std::cout << "No path exists from " << src << " to " << dest << ".\n";
-        return {-1, {}};
+        return {-1, -1, {}};
     }
 
-    // Reconstruct path from destination to source (reverse)
+    // Reconstruct path by walking backward from destination to source
     std::vector<T> path;
     for (int at = i_dest; at != -1; at = parents[at]) {
         path.push_back(vertices[at]);
     }
     std::reverse(path.begin(), path.end());
-    return {distances[i_dest], path};
+
+    // Calculate total cost along the path
+    int total_cost = 0;
+    for (size_t i = 0; i + 1 < path.size(); ++i) {
+        int from = getVertexIndex(path[i]);
+        int to = getVertexIndex(path[i + 1]);
+
+        // Find the edge from 'from' to 'to' and add its cost
+        for (const auto& edge : edges[from]) {
+            if (edge.neighbor == to) {
+                total_cost += edge.cost;
+                break;
+            }
+        }
+    }
+    return {distances[i_dest], total_cost, path};
 }
+
+// DFS for detecting cycles
+bool Graph<T>::DFS(int src, int dest, std::vector<bool>& visited, const std::vector<std::vector<Edge>>& mstEdges) {
+    if (src == dest) return true;
+    visited[src] = true;
+
+    for (const auto& edge : mstEdges[src]) {
+        if (!visited[edge.neighbor] && DFS(edge.neighbor, dest, visited, mstEdges)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Returns MST edges using Kruskal's algorithm
+std::vector<Edge> Graph<T>::getMinimumSpanningTree() {
+    int V = vertices.size();
+
+    // Collect all edges, avoid duplicates
+    std::vector<Edge> allEdges;
+        for (int u = 0; u < V; ++u) {
+            for (const auto& edge : edges[u]) {
+                if (u < edge.neighbor) allEdges.push_back(edge);
+            }
+        }
+
+    // Build minHeap with all edges by distance
+    minHeap<Edge> heap;
+    for (const auto& e : allEdges) {
+        heap.insert(e);
+    }
+
+    // MST adjacency list to store edges added so far
+    std::vector<std::vector<Edge>> mstEdges(V);
+
+    // Result vector to store edges included in the MST
+    std::vector<Edge> mst;
+
+    // Continue until MST has V-1 edges or no edges remain in the heap
+    while (!heap.empty() && mst.size() < V - 1) {
+        // Extract edge with minimum weight
+        Edge e = heap.deleteMin();
+
+        // Use DFS to check if adding edge e would create a cycle in MST
+        std::vector<bool> visited(V, false);
+        if (!DFS(e.src, e.neighbor, visited, mstEdges)) {
+            // Safe to add edge to MST
+            mst.push_back(e);
+            mstEdges[e.src].push_back(e);
+            mstEdges[e.neighbor].push_back({e.neighbor, e.src, e.distance, e.cost});
+        }
+        // else skip edge to avoid cycle
+    }
+
+    return mst;
+}
+

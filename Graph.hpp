@@ -28,7 +28,10 @@ public:
     std::pair<int, std::vector<std::vector<T>>> getShortestPathsToStateData(const T& src, const std::string& state) const;
 
     // Finding shortest path between start and destination airports
-    std::pair<int, std::vector<T>> getShortestPathToAirport(const T& src, const T& dest);
+    std::tuple<int, int, std::vector<T>> getShortestPathToAirport(const T& src, const T& dest);
+
+    // Minimum spanning tree - Kruskal's algorithm
+    std::vector<Edge> getMinimumSpanningTree();
 
 private:
     std::vector<T> vertices;
@@ -37,6 +40,9 @@ private:
     
     int getVertexIndex(const T& value) const;
     void findPaths(int u, const std::vector<std::vector<int>>& parents, std::vector<T>& currentPath, std::vector<std::vector<T>>& allPaths) const;
+
+    // DFS check for Kruskal's - cycle detection
+    bool DFS(int src, int dest, std::vector<bool>& visited, const std::vector<std::vector<Edge>>& mstEdges);
 };
 
 #include "Graph.tpp"
