@@ -171,12 +171,9 @@ int main(void) {
         else if (choice == 4){
             airportGraph.displayAirportConnections();
         }
-<<<<<<< HEAD
-=======
         else if (choice == 5){
             airportGraph.printMST();
         }
->>>>>>> a1e0730 (Prim's Algorithem Added)
     }
     return 0;
 }
