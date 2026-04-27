@@ -240,7 +240,7 @@ std::vector<Edge> Graph<T>::getMinimumSpanningTree() {
             // Safe to add edge to MST
             mst.push_back(e);
             mstEdges[e.src].push_back(e);
-            mstEdges[e.neighbor].push_back({e.neighbor, e.src, e.distance, e.cost});
+            mstEdges[e.neighbor].push_back(Edge(e.neighbor, e.src, e.distance, e.cost));
         }
         // else skip edge to avoid cycle
     }
