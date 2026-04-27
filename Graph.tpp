@@ -126,6 +126,9 @@ std::pair<int, std::vector<T>> Graph<T>::getShortestPathToAirport(const T& src, 
     std::vector<int> distances(vertices.size(), INT_MAX);
     std::vector<int> parents(vertices.size(), -1);
 
+    //initializes dist at 0
+    distances[i_src] = 0;
+
     minHeap<Edge> heap;
     heap.insert(Edge(i_src, 0, 0));
 
@@ -291,4 +294,53 @@ void Graph<T>::displayAirportConnections() const{
     for (const auto& p : results) {
         std::cout << p.first << "     " << p.second << "\n";
     }
+}
+
+template<typename T>
+Graph<T> Graph<T>::buildUndirectedGraph() const {
+    Graph<T> undirected;
+
+    //  Copy the vertices
+    for (int i = 0; i < (int)vertices.size(); i++) {
+        undirected.insertVertex(vertices[i], vertexToState.at(vertices[i]));
+    }
+
+    int n = vertices.size();
+
+    // Process all pairs
+    for (int u = 0; u < n; u++) {
+        for (const auto& edge : edges[u]) {
+            int v = edge.neighbor;
+
+            // Avoid duplicate processing (only process u < v)
+            if (u > v) continue;
+
+            int cost_uv = edge.cost;
+            int cost_vu = INT_MAX;
+
+            // Check if reverse edge exists
+            for (const auto& rev : edges[v]) {
+                if (rev.neighbor == u) {
+                    cost_vu = rev.cost;
+                    break;
+                }
+            }
+
+            int finalCost;
+
+            if (cost_vu == INT_MAX) {
+                // if only one direction exists
+                finalCost = cost_uv;
+            } else {
+                // If both exist then take min cost
+                finalCost = std::min(cost_uv, cost_vu);
+            }
+
+            // Add undirected edge BOTH ways
+            undirected.insertEdge(vertices[u], vertices[v], 0, finalCost);
+            undirected.insertEdge(vertices[v], vertices[u], 0, finalCost);
+        }
+    }
+
+    return undirected;
 }

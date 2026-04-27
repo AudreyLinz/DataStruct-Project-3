@@ -36,6 +36,9 @@ public:
     //Finds the connectivity between airports
     void displayAirportConnections() const;
 
+    //Creates an undirected graph
+    Graph<T> buildUndirectedGraph() const;
+
 private:
     std::vector<T> vertices;
     std::map<T, std::string> vertexToState; 
