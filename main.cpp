@@ -100,26 +100,24 @@ int main(void) {
 
             auto res = airportGraph.getShortestPathToAirport(src, dest);
 
-            if (res.first == -1) {
+            if (std::get<0>(res) == -1) {
                 std::cout << "Shortest route from " << src << " to " << dest << ": None\n";
             } 
             else {
                 std::cout << "Shortest route from " << src << " to " << dest << ": ";
 
-                int totalCost = 0;
+                auto path = std::get<2>(res);
 
-                for (size_t i = 0; i < res.second.size(); i++) {
-                    std::cout << res.second[i];
-
-                    if (i < res.second.size() - 1) {
+                for (size_t i = 0; i < path.size(); i++) {
+                    std::cout << path[i];
+                    if (i < path.size() - 1)
                         std::cout << " -> ";
-
-                        auto w = airportGraph.getEdgeWeights(res.second[i], res.second[i + 1]);
-                        totalCost += w.second;
-                    }
                 }
 
-                std::cout << ". The length is " << res.first;
+                int totalDist = std::get<0>(res);
+                int totalCost = std::get<1>(res);
+
+                std::cout << ". The length is " << totalDist;
                 std::cout << ". The cost is " << totalCost << ".\n";
             }
         }
