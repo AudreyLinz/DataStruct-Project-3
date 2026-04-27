@@ -138,7 +138,7 @@ int main(void) {
         else if (choice == 4){
             airportGraph.displayAirportConnections();
         }
-=======
+
         else if (choice == 5){
             airportGraph.printMST();
         }
